@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puntuaciones de Equipos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+        body {
+            background-color: #0a0a0a;
+            color: #00ffcc;
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #00ffaa;
+            
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        a {
+            display: block;
+            margin: 15px 0;
+            text-decoration: none;
+            color: #00ffaa;
+            font-weight: bold;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+        a:hover {
+            color: #ff9900;
+            text-shadow: 0px 0px 10px #ff9900;
+        }
+        .tabla-container {
+            background: rgba(0, 0, 0, 0);
+            padding: 10px 20px;
+            margin: auto;
+           width: max-content;
+        }
+        table {
+            width: 100%;
+            padding: 10px 15px;
+            max-width: 700px;
+            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 4px;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            border:none;
+        }
+        th, td {
+            padding: 5px;
+            text-align: center;
+            color: #00ffcc;
+        }
+        
+        th {
+            background: #00ffcc;
+            color: white;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+        .color-picker {
+    gap: 15px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.color-picker label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.color-picker input[type="color"],
+.color-picker input[type="range"] {
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    background-color: #fff;
+}
+
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #ff9900;
+        }
+        #miDiv {
+            display: none;
+            width: 100%;
+            background-color: lightblue;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        #toggleBtn {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #toggleBtn.active {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>Puntuaciones de Equipos Grupo E
+    </h2><br><a href="registroge.html">Registrar equipos</a><br>
+   
+    
+
+    
+    <div class="tabla-container" id="tablaContainer">
+        <table id="tablaPuntuaciones">
+            <thead>
+                <tr>
+                    <th>Top</th>
+                    <th>Team Name</th>
+                    <th>Booyah</th>
+                    <th>Kills</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody id="scoreTable"></tbody>
+        </table>
+    </div>
+    <button onclick="descargarImagen()">Descargar Imagen</button>
+   
+    <script>
+        let teams = JSON.parse(localStorage.getItem("outlandere")) || [];
+
+        function calculatePoints(team) {
+            let points = team.kills;
+            if (team.position === 1) points += 12;
+            else if (team.position === 2) points += 9;
+            else if (team.position === 3) points += 8;
+            else if (team.position === 4) points += 7;
+            else if (team.position === 5) points += 6;
+            else if (team.position === 6) points += 5;
+            else if (team.position === 7) points += 4;
+            else if (team.position === 8) points += 3;
+            else if (team.position === 9) points += 2;
+            else if (team.position === 10) points += 1;
+            return points;
+        }
+
+        function aggregateTeams(teams) {
+            let aggregated = {};
+            teams.forEach(team => {
+                if (!aggregated[team.name]) {
+                    aggregated[team.name] = { 
+                        name: team.name, 
+                        booyah: team.position === 1 ? 1 : 0, 
+                        kills: team.kills, 
+                        points: calculatePoints(team) 
+                    };
+                } else {
+                    aggregated[team.name].kills += team.kills;
+                    aggregated[team.name].points += calculatePoints(team);
+                    if (team.position === 1) {
+                        aggregated[team.name].booyah += 1;
+                    }
+                }
+            });
+            let sortedTeams = Object.values(aggregated).sort((a, b) => b.points - a.points);
+            while (sortedTeams.length < 12) {
+                sortedTeams.push({ name: "-", booyah: 0, kills: 0, points: 0 });
+            }
+            return sortedTeams.slice(0, 12);
+        }
+
+        function renderScores() {
+            const scoreTable = document.getElementById("scoreTable");
+            scoreTable.innerHTML = "";
+            let aggregatedTeams = aggregateTeams(teams);
+            aggregatedTeams.forEach((team, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${team.name}</td>
+                    <td>${team.booyah}</td>
+                    <td>${team.kills}</td>
+                    <td>${team.points}</td>
+                `;
+                scoreTable.appendChild(row);
+            });
+        }
+
+
+        
+
+
+
+
+        function descargarImagen() {
+            const tablaContainer = document.getElementById("tablaContainer");
+            html2canvas(tablaContainer, { backgroundColor: null, scale: 2 }).then(canvas => {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "tabla_puntuaciones.png";
+                link.click();
+            });
+        }
+
+        renderScores();
+    </script>
+    <script>
+        function applySettings() {
+            document.getElementById("tablaPuntuaciones").style.backgroundColor = localStorage.getItem("tableColor") || "#141414";
+            document.querySelectorAll("th").forEach(el => {
+                el.style.backgroundColor = localStorage.getItem("thColor") || "#6600cc";
+                el.style.color = localStorage.getItem("thTextColor") || "#ffffff";
+            });
+            document.querySelectorAll("td").forEach(el => {
+                el.style.backgroundColor = localStorage.getItem("tdColor") || "#000000";
+                el.style.color = localStorage.getItem("tdTextColor") || "#00ffcc";
+            });
+            
+            document.getElementById("tablaPuntuaciones").style.borderRadius = (localStorage.getItem("tableRadius") || "10") + "px";
+            document.querySelectorAll("th, td").forEach(el => {
+                el.style.borderRadius = (localStorage.getItem("cellRadius") || "4") + "px";
+                el.style.transform = `skew(${localStorage.getItem("cellSkew") || "-20"}deg, 0deg)`;
+            });
+        }
+        
+        function saveSettings() {
+            localStorage.setItem("tableColor", document.getElementById("tableColor").value);
+            localStorage.setItem("thColor", document.getElementById("thColor").value);
+            localStorage.setItem("thTextColor", document.getElementById("thTextColor").value);
+            localStorage.setItem("tdColor", document.getElementById("tdColor").value);
+            localStorage.setItem("tdTextColor", document.getElementById("tdTextColor").value);
+            localStorage.setItem("tableRadius", document.getElementById("tableRadius").value);
+            localStorage.setItem("cellRadius", document.getElementById("cellRadius").value);
+            localStorage.setItem("cellSkew", document.getElementById("cellSkew").value);
+            applySettings();
+            
+        }
+
+        applySettings();
+
+
+
+        function toggleDiv() {
+            var div = document.getElementById("miDiv");
+            var button = document.getElementById("toggleBtn");
+            if (div.style.display === "none" || div.style.display === "") {
+                div.style.display = "block";
+                button.classList.add("active");
+            } else {
+                div.style.display = "none";
+                button.classList.remove("active");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outlander</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #1e1e1e;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .butons{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        .active {
+            background-color: #007BFF !important;
+        }
+        .content {
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+        iframe {
+            width: 100%;
+            height: 90vh;
+            border: none;
+            background: #222;
+        }
+    </style>
+</head>
+<body>
+    <header>Underfire / <a href="editortable.html">Editor de tablas</a></header>
+    <main>
+        <div class="butons">
+            <button id="btn1" onclick="showContent(1, this)">Gr A</button>
+            <button id="btn2" onclick="showContent(2, this)">Gr B</button>
+            <button id="btn3" onclick="showContent(3, this)">Gr C</button>
+            <button id="btn4" onclick="showContent(4, this)">Gr D</button>
+            <button id="btn5" onclick="showContent(5, this)">Gr E</button>
+            <button id="btn6" onclick="showContent(6, this)">Gr F</button>
+            <button id="btn7" onclick="showContent(7, this)">Finales</button>
+        </div>
+        
+        <div id="content1" class="content"><iframe src="grupoA/nuevapruevacontador.html"></iframe></div>
+        <div id="content2" class="content"><iframe src="grupoB/registrogb.html"></iframe></div>
+        <div id="content3" class="content"><iframe src="grupoC/registrogc.html"></iframe></div>
+        <div id="content4" class="content"><iframe src="grupoD/registrogd.html"></iframe></div>
+        <div id="content5" class="content"><iframe src="grupoE/registroge.html"></iframe></div>
+        <div id="content6" class="content"><iframe src="grupoF/registrogf.html"></iframe></div>
+        <div id="content7" class="content"><iframe src="grupoFF/registrogff.html"></iframe></div>
+    </main>
+
+    <script>
+        function showContent(num, button) {
+            document.querySelectorAll('.content').forEach(div => div.style.display = 'none');
+            document.getElementById('content' + num).style.display = 'block';
+            localStorage.setItem('lastContent', num);
+            
+            document.querySelectorAll('.butons button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+        
+        window.onload = function() {
+            const lastContent = localStorage.getItem('lastContent');
+            if (lastContent) {
+                const button = document.getElementById('btn' + lastContent);
+                if (button) showContent(lastContent, button);
+            }
+        }
+    </script>
+</body>
+</html>

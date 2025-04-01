@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+       /* Reset general */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Estilos del cuerpo */
+body {
+    background-color: #0a0a0a;
+    color: #00ffcc;
+    padding: 20px;
+    text-align: center;
+}
+header{
+    padding: 10px;
+    background-color: #333;
+}
+table{
+    margin: auto;
+    padding: 10px 15px;
+    border-collapse: separate;
+    border-spacing: 4px;
+    margin-top: 50px;
+}
+th, td {
+            padding: 5px;
+            text-align: center;
+            width: max-content;
+        }
+/* Contenedor del selector de colores */
+.color-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.color-picker h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.color-picker label {
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.color-picker input[type="color"],
+.color-picker input[type="range"] {
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    background-color: #fff;
+}
+
+.color-picker button {
+    padding: 10px;
+    font-size: 14px;
+    color: white;
+    background-color: #00cc99;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.color-picker button:hover {
+    background-color: #009977;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    .color-picker {
+        width: 95%;
+        padding: 15px;
+    }
+    .color-picker h3 {
+        font-size: 16px;
+    }
+    .color-picker label {
+        font-size: 12px;
+    }
+    .color-picker button {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+    </style>
+</head>
+<body>
+<header><a style="color: #009977;" href="index.html">volver</a></header>
+    <table id="tablaPuntuaciones">
+        <thead>
+            <tr>
+                <th>Top</th>
+                <th>Team Name</th>
+                <th>Booyah</th>
+                <th>Kills</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr>
+        <tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr>
+        <tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr>
+       
+    </tbody>
+    </table>
+    <div id="miDiv"><div class="color-picker">
+        <h3>Edita los colores y estilos de la tabla</h3>
+        <label>Fondo Tabla: <input type="color" id="tableColor"></label>
+        <label>Fondo TH: <input type="color" id="thColor"></label>
+        <label>Color Texto TH: <input type="color" id="thTextColor"></label>
+        <label>Fondo TD: <input type="color" id="tdColor"></label>
+        <label>Color Texto TD: <input type="color" id="tdTextColor"></label>
+        
+        <label>Border Radius Tabla: <input type="range" id="tableRadius" min="0" max="50" value="10"></label>
+        <label>Border Radius TH/TD: <input type="range" id="cellRadius" min="0" max="20" value="4"></label>
+        <label>Skew TH/TD: <input type="range" id="cellSkew" min="-30" max="30" value="-20"></label>
+        <button onclick="saveSettings()">Guardar Cambios</button>
+    </div>
+
+
+   
+
+    
+
+
+    <script>
+        function applySettings() {
+            document.getElementById("tablaPuntuaciones").style.backgroundColor = localStorage.getItem("tableColor") || "#141414";
+            document.querySelectorAll("th").forEach(el => {
+                el.style.backgroundColor = localStorage.getItem("thColor") || "#6600cc";
+                el.style.color = localStorage.getItem("thTextColor") || "#ffffff";
+            });
+            document.querySelectorAll("td").forEach(el => {
+                el.style.backgroundColor = localStorage.getItem("tdColor") || "#000000";
+                el.style.color = localStorage.getItem("tdTextColor") || "#00ffcc";
+            });
+            
+            document.getElementById("tablaPuntuaciones").style.borderRadius = (localStorage.getItem("tableRadius") || "10") + "px";
+            document.querySelectorAll("th, td").forEach(el => {
+                el.style.borderRadius = (localStorage.getItem("cellRadius") || "4") + "px";
+                el.style.transform = `skew(${localStorage.getItem("cellSkew") || "-20"}deg, 0deg)`;
+            });
+        }
+        
+        function saveSettings() {
+            localStorage.setItem("tableColor", document.getElementById("tableColor").value);
+            localStorage.setItem("thColor", document.getElementById("thColor").value);
+            localStorage.setItem("thTextColor", document.getElementById("thTextColor").value);
+            localStorage.setItem("tdColor", document.getElementById("tdColor").value);
+            localStorage.setItem("tdTextColor", document.getElementById("tdTextColor").value);
+            localStorage.setItem("tableRadius", document.getElementById("tableRadius").value);
+            localStorage.setItem("cellRadius", document.getElementById("cellRadius").value);
+            localStorage.setItem("cellSkew", document.getElementById("cellSkew").value);
+            applySettings();
+            
+        }
+
+        applySettings();
+    </script>
+</body>
+</html>
